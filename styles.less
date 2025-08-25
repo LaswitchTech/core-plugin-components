@@ -1,0 +1,172 @@
+.index-layout {
+    .dataTables_wrapper {
+        .index-controls {
+            background-color: var(--bs-gray-200);
+            padding: var(--bs-spacer-2) var(--bs-spacer-3);
+            border-bottom: 1px solid var(--bs-border-color);
+            display: flex;
+            justify-content: flex-end !important;
+
+            .dataTables_filter {
+                flex-grow: 1;
+                margin-right: var(--bs-spacer-3);
+
+                label {
+                    font-size: 0;
+                    width: 100%;
+
+                    input {
+                        margin-left: 0;
+                        min-height: auto;
+                        font-size: var(--bs-body-font-size);
+                        padding: calc(var(--bs-spacer-3) * .375) calc(var(--bs-spacer-3) * .75);
+                        border-radius: var(--bs-border-radius);
+                        width: 100%;
+                    }
+                }
+            }
+
+            .dt-buttons {
+                flex-shrink: 1;
+                width: auto;
+
+                /* reset all buttons in the group */
+                > .btn,
+                > .btn-group > .btn {
+                    border-radius: 0 !important;
+                }
+
+                /* FIRST visible child (desktop) */
+                > :nth-child(1 of :not(.d-none)) {
+                    &.btn {
+                        border-top-left-radius: var(--bs-border-radius) !important;
+                        border-bottom-left-radius: var(--bs-border-radius) !important;
+                    }
+                    &.btn-group > .btn {
+                        border-top-left-radius: var(--bs-border-radius) !important;
+                        border-bottom-left-radius: var(--bs-border-radius) !important;
+                    }
+                }
+
+                /* LAST visible child (desktop) */
+                > :nth-last-child(1 of :not(.d-none)) {
+                    &.btn {
+                        border-top-right-radius: var(--bs-border-radius) !important;
+                        border-bottom-right-radius: var(--bs-border-radius) !important;
+                    }
+                    &.btn-group > .btn {
+                        border-top-right-radius: var(--bs-border-radius) !important;
+                        border-bottom-right-radius: var(--bs-border-radius) !important;
+                    }
+                }
+            }
+        }
+
+        .index-table {
+            table {
+                tbody {
+                    tr {
+                        td {
+                            > div {
+                                display: flex;
+                                justify-content: start;
+                                align-items: center;
+                                min-height: 34px;
+
+                                .avatar {
+                                    width: 32px;
+                                    height: 32px;
+                                    margin-right: var(--bs-spacer-2);
+                                    border-radius: 50%;
+                                }
+
+                                h1,h2,h3,h4,h5,h6 {
+                                    margin: 0;
+                                }
+                            }
+
+                            > ul.dtr-details {
+                                padding: var(--bs-spacer-2) var(--bs-spacer-3);
+                                width: 100%;
+
+                                > li {
+                                    width: 100%;
+
+                                    .avatar {
+                                        width: 32px;
+                                        height: 32px;
+                                        margin-right: var(--bs-spacer-2);
+                                        border-radius: 50%;
+                                    }
+
+                                    h1,h2,h3,h4,h5,h6 {
+                                        margin: 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .index-footer {
+            background-color: var(--bs-gray-200);
+            padding: var(--bs-spacer-2) var(--bs-spacer-3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .dataTables_info {
+                padding-top: 0!important;
+            }
+
+            .pagination {
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 992px) {
+    .index-layout {
+        .dataTables_wrapper {
+            .index-controls {
+                .dt-buttons {
+                    >* {
+                        &:has(.dropdown-toggle) {
+                            display:none;
+                        }
+                        &.btn-clear-settings {
+                            display:none;
+                        }
+                        &.btn-save-settings {
+                            display:none;
+                        }
+                    }
+
+                    > :nth-child(1 of :not(.d-none):not(:has(.dropdown-toggle)):not(.btn-clear-settings):not(.btn-save-settings)) {
+                        &.btn,
+                        &.btn-group > .btn {
+                            border-top-left-radius: var(--bs-border-radius) !important;
+                            border-bottom-left-radius: var(--bs-border-radius) !important;
+                        }
+                    }
+                    > :nth-last-child(1 of :not(.d-none):not(:has(.dropdown-toggle)):not(.btn-clear-settings):not(.btn-save-settings)) {
+                        &.btn,
+                        &.btn-group > .btn {
+                            border-top-right-radius: var(--bs-border-radius) !important;
+                            border-bottom-right-radius: var(--bs-border-radius) !important;
+                        }
+                    }
+                }
+            }
+            .index-footer {
+                .dataTables_info {
+                    display:none;
+                }
+            }
+        }
+    }
+}
