@@ -695,7 +695,7 @@ builder.add('layouts','index', class extends builder.ComponentClass {
             advancedSearch: false,
             showButtonsLabel: false,
             interval: 15000,
-            autoStart: true,
+            autoStart: false,
             callback: {},
         };
         this._data = {};
@@ -782,49 +782,49 @@ builder.add('layouts','index', class extends builder.ComponentClass {
                 // Set _datatable
                 self.datatable(datatable);
 
+                // Retrieve Records
+                $.ajax({
+                    url: self._properties.url,
+                    headers: {'X-CSRF-Authorization': CSRF_KEY},
+                    type: 'POST',dataType: 'json',
+                    data: {
+                        conditions: self._properties.conditions,
+                    },
+                    error: function(xhr, status, error) {
+                        let color = 'info', icon = 'question-circle', title = builder.Locale.get(xhr.statusText), content = builder.Locale.get(xhr.responseText);
+                        switch(xhr.status){
+                            case 403: color = 'danger'; icon = 'shield-lock'; break;
+                            case 404: color = 'warning'; icon = 'question-diamond'; break;
+                            case 500: color = 'danger'; icon = 'bug'; break;
+                        }
+                        self._builder.Component(
+                            "alert",
+                            self._component,
+                            {
+                                class: {
+                                    component: 'm-3',
+                                },
+                                dismissible: false,
+                                icon:icon,
+                                color:color,
+                                title:title
+                            },
+                            function(alert,component){
+                                component.content.html('<pre class="m-0 p-2">'+content+'</pre>');
+                            }
+                        );
+                    },
+                    success: function(response) {
+
+                        // Add Records
+                        for(const [key, record] of Object.entries(response.records)){
+                            self.add(record);
+                        }
+                    }
+                });
+
                 // Check if autoStart is enabled
                 if(self._properties.autoStart){
-
-                    // Retrieve Records
-                    $.ajax({
-                        url: self._properties.url,
-                        headers: {'X-CSRF-Authorization': CSRF_KEY},
-                        type: 'POST',dataType: 'json',
-                        data: {
-                            conditions: self._properties.conditions,
-                        },
-                        error: function(xhr, status, error) {
-                            let color = 'info', icon = 'question-circle', title = builder.Locale.get(xhr.statusText), content = builder.Locale.get(xhr.responseText);
-                            switch(xhr.status){
-                                case 403: color = 'danger'; icon = 'shield-lock'; break;
-                                case 404: color = 'warning'; icon = 'question-diamond'; break;
-                                case 500: color = 'danger'; icon = 'bug'; break;
-                            }
-                            self._builder.Component(
-                                "alert",
-                                self._component,
-                                {
-                                    class: {
-                                        component: 'm-3',
-                                    },
-                                    dismissible: false,
-                                    icon:icon,
-                                    color:color,
-                                    title:title
-                                },
-                                function(alert,component){
-                                    component.content.html('<pre class="m-0 p-2">'+content+'</pre>');
-                                }
-                            );
-                        },
-                        success: function(response) {
-
-                            // Add Records
-                            for(const [key, record] of Object.entries(response.records)){
-                                self.add(record);
-                            }
-                        }
-                    });
 
                     // Start
                     self.start();
