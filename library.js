@@ -692,7 +692,7 @@ builder.add('layouts','index', class extends builder.ComponentClass {
             columns: [],
             standardSearch: true,
             selectTools: true,
-            advancedSearch: false,
+            advancedSearch: true,
             showButtonsLabel: false,
             interval: 15000,
             autoStart: false,
