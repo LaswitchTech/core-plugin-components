@@ -685,11 +685,14 @@ builder.add('layouts','index', class extends builder.ComponentClass {
                 component: null,
             },
             url: null,
+            endpoint: null,
+            primary: 'id',
             conditions: [],
             dblclick: null,
             actions: {},
             buttons: [],
             columns: [],
+            order: [[0, 'asc']],
             standardSearch: true,
             selectTools: true,
             advancedSearch: true,
@@ -713,6 +716,7 @@ builder.add('layouts','index', class extends builder.ComponentClass {
         this._properties.table = {};
         this._properties.table.class = {};
         this._properties.table.datatable = {};
+        this._properties.table.primary = this._properties.primary;
 
         // Table Properties
         this._properties.table.class.buttons = 'index-controls';
@@ -751,6 +755,9 @@ builder.add('layouts','index', class extends builder.ComponentClass {
             });
         };
 
+        // Set Column Order
+        this._properties.table.datatable.order = this._properties.order;
+
         // Add Row Double Click Event
         this._properties.table.dblclick = this._properties.dblclick;
     }
@@ -783,45 +790,64 @@ builder.add('layouts','index', class extends builder.ComponentClass {
                 self.datatable(datatable);
 
                 // Retrieve Records
-                $.ajax({
-                    url: self._properties.url,
-                    headers: {'X-CSRF-Authorization': CSRF_KEY},
-                    type: 'POST',dataType: 'json',
-                    data: {
-                        conditions: self._properties.conditions,
-                    },
-                    error: function(xhr, status, error) {
-                        let color = 'info', icon = 'question-circle', title = builder.Locale.get(xhr.statusText), content = builder.Locale.get(xhr.responseText);
-                        switch(xhr.status){
-                            case 403: color = 'danger'; icon = 'shield-lock'; break;
-                            case 404: color = 'warning'; icon = 'question-diamond'; break;
-                            case 500: color = 'danger'; icon = 'bug'; break;
-                        }
-                        self._builder.Component(
-                            "alert",
-                            self._component,
-                            {
-                                class: {
-                                    component: 'm-3',
-                                },
-                                dismissible: false,
-                                icon:icon,
-                                color:color,
-                                title:title
-                            },
-                            function(alert,component){
-                                component.content.html('<pre class="m-0 p-2">'+content+'</pre>');
+                if(self._properties.url){
+                    $.ajax({
+                        url: self._properties.url,
+                        headers: {'X-CSRF-Authorization': CSRF_KEY},
+                        type: 'POST',dataType: 'json',
+                        data: {
+                            conditions: self._properties.conditions,
+                        },
+                        error: function(xhr, status, error) {
+                            let color = 'info', icon = 'question-circle', title = builder.Locale.get(xhr.statusText), content = builder.Locale.get(xhr.responseText);
+                            switch(xhr.status){
+                                case 403: color = 'danger'; icon = 'shield-lock'; break;
+                                case 404: color = 'warning'; icon = 'question-diamond'; break;
+                                case 500: color = 'danger'; icon = 'bug'; break;
                             }
-                        );
-                    },
-                    success: function(response) {
+                            self._builder.Component(
+                                "alert",
+                                self._component,
+                                {
+                                    class: {
+                                        component: 'm-3',
+                                    },
+                                    dismissible: false,
+                                    icon:icon,
+                                    color:color,
+                                    title:title
+                                },
+                                function(alert,component){
+                                    component.content.html('<pre class="m-0 p-2">'+content+'</pre>');
+                                }
+                            );
+                        },
+                        success: function(response) {
 
-                        // Add Records
-                        for(const [key, record] of Object.entries(response.records)){
-                            self.add(record);
+                            // Add Records
+                            for(const [key, record] of Object.entries(response.records)){
+                                self.add(record);
+                            }
                         }
+                    });
+                }
+
+                // Retrieve Records via Endpoint
+                if(self._properties.endpoint){
+                    if(Array.isArray(self._properties.conditions)){
+                        API.endpoint(self._properties.endpoint).data({conditions: self._properties.conditions}).execute(function(response){
+                            for(const [key, record] of Object.entries(response.records)){
+                                self.add(record);
+                            }
+                        });
+                    } else {
+                        API.endpoint(self._properties.endpoint).execute(function(response){
+                            for(const [key, record] of Object.entries(response.records)){
+                                self.add(record);
+                            }
+                        });
                     }
-                });
+                }
 
                 // Check if autoStart is enabled
                 if(self._properties.autoStart){
@@ -856,24 +882,64 @@ builder.add('layouts','index', class extends builder.ComponentClass {
         }
 
         // Retrieve Records
-        $.ajax({
-            url: this._properties.url,
-            headers: {'X-CSRF-Authorization': CSRF_KEY},
-            type: 'POST',dataType: 'json',
-            data: {
-                conditions: this._properties.conditions,
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching data:', error);
-            },
-            success: function(response) {
+        if(this._properties.url){
+            $.ajax({
+                url: this._properties.url,
+                headers: {'X-CSRF-Authorization': CSRF_KEY},
+                type: 'POST',dataType: 'json',
+                data: {
+                    conditions: this._properties.conditions,
+                },
+                error: function(xhr, status, error) {
+                    let color = 'info', icon = 'question-circle', title = builder.Locale.get(xhr.statusText), content = builder.Locale.get(xhr.responseText);
+                    switch(xhr.status){
+                        case 403: color = 'danger'; icon = 'shield-lock'; break;
+                        case 404: color = 'warning'; icon = 'question-diamond'; break;
+                        case 500: color = 'danger'; icon = 'bug'; break;
+                    }
+                    self._builder.Component(
+                        "alert",
+                        self._component,
+                        {
+                            class: {
+                                component: 'm-3',
+                            },
+                            dismissible: false,
+                            icon:icon,
+                            color:color,
+                            title:title
+                        },
+                        function(alert,component){
+                            component.content.html('<pre class="m-0 p-2">'+content+'</pre>');
+                        }
+                    );
+                },
+                success: function(response) {
 
-                // Add Records
-                for(const [key, record] of Object.entries(response.records)){
-                    self.add(record);
+                    // Add Records
+                    for(const [key, record] of Object.entries(response.records)){
+                        self.add(record);
+                    }
                 }
+            });
+        }
+
+        // Retrieve Records via Endpoint
+        if(this._properties.endpoint){
+            if(Array.isArray(this._properties.conditions)){
+                API.endpoint(this._properties.endpoint).data({conditions: self._properties.conditions}).execute(function(response){
+                    for(const [key, record] of Object.entries(response.records)){
+                        self.add(record);
+                    }
+                });
+            } else {
+                API.endpoint(this._properties.endpoint).execute(function(response){
+                    for(const [key, record] of Object.entries(response.records)){
+                        self.add(record);
+                    }
+                });
             }
-        });
+        }
 
         return this;
     }
@@ -913,12 +979,3 @@ builder.add('layouts','index', class extends builder.ComponentClass {
         return this;
     }
 })
-
-
-
-
-
-
-
-// builder.add('layouts','profile', class extends builder.ComponentClass {})
-// builder.add('renderers', '', function(value, data){})
