@@ -835,7 +835,7 @@ builder.add('layouts','index', class extends builder.ComponentClass {
                 // Retrieve Records via Endpoint
                 if(self._properties.endpoint){
                     if(Array.isArray(self._properties.conditions)){
-                        API.endpoint(self._properties.endpoint).data({conditions}).execute(function(response){
+                        API.endpoint(self._properties.endpoint).data({conditions: self._properties.conditions}).execute(function(response){
                             for(const [key, record] of Object.entries(response.records)){
                                 self.add(record);
                             }
@@ -927,7 +927,7 @@ builder.add('layouts','index', class extends builder.ComponentClass {
         // Retrieve Records via Endpoint
         if(this._properties.endpoint){
             if(Array.isArray(this._properties.conditions)){
-                API.endpoint(this._properties.endpoint).data({conditions}).execute(function(response){
+                API.endpoint(this._properties.endpoint).data({conditions: self._properties.conditions}).execute(function(response){
                     for(const [key, record] of Object.entries(response.records)){
                         self.add(record);
                     }
