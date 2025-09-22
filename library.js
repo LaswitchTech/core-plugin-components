@@ -979,12 +979,3 @@ builder.add('layouts','index', class extends builder.ComponentClass {
         return this;
     }
 })
-
-
-
-
-
-
-
-// builder.add('layouts','profile', class extends builder.ComponentClass {})
-// builder.add('renderers', '', function(value, data){})
