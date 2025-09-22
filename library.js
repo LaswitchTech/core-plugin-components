@@ -692,6 +692,7 @@ builder.add('layouts','index', class extends builder.ComponentClass {
             actions: {},
             buttons: [],
             columns: [],
+            order: [[0, 'asc']],
             standardSearch: true,
             selectTools: true,
             advancedSearch: true,
@@ -753,6 +754,9 @@ builder.add('layouts','index', class extends builder.ComponentClass {
                 'placeholder': builder.Locale.get('Search...'),
             });
         };
+
+        // Set Column Order
+        this._properties.table.datatable.order = this._properties.order;
 
         // Add Row Double Click Event
         this._properties.table.dblclick = this._properties.dblclick;
